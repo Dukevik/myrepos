@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Management;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using System.Net;
+using System.IO;
+using System.Threading;
+using System.Diagnostics;
+
+namespace iZepp_Cheat
+{
+    public partial class Form1 : MetroFramework.Forms.MetroForm
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        public string GetHDDSerial()
+        {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM win32_logicaldisk");
+            foreach (ManagementObject wmi_HD in searcher.Get())
+            {
+                if (wmi_HD["VolumeSerialNumber"] != null)
+                return wmi_HD["VolumeSerialNumber"].ToString();
+            }
+            return string.Empty;
+        }
+
+        string path;
+        private void iTalk_Button_21_Click(object sender, EventArgs e)
+        {
+            string cpuInfo = string.Empty;
+            ManagementClass mc = new ManagementClass("win32_processor");
+            ManagementObjectCollection moc = mc.GetInstances();
+            foreach (ManagementObject mo in moc)
+            {
+                if (cpuInfo == "")
+                {
+                    cpuInfo = mo.Properties["processorID"].Value.ToString();
+                    break;
+                }
+            }
+
+            System.Net.WebClient Webforfuckinlog = new System.Net.WebClient();
+            DateTime now = DateTime.Now;
+
+            System.Net.WebClient Wc = new System.Net.WebClient();
+            string pplbanned = Wc.DownloadString("https://raw.githubusercontent.com/Dukevik/myrepos/main/banned");
+            string pplallowed = Wc.DownloadString("https://raw.githubusercontent.com/Dukevik/myrepos/main/users");
+
+            if (pplbanned.Contains(GetHDDSerial()))
+            {
+                MessageBox.Show("Vôcê foi banido !", "Negado", MessageBoxButtons.OK);
+                Application.Exit();
+            }
+            else if (pplallowed.Contains(GetHDDSerial()))
+            {
+                MessageBox.Show("Você está permitido, bem-vindo.", "Concedido", MessageBoxButtons.OK);
+
+                string folder = @"C:\Windows\Branding\iZepp";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                WebClient hj = new WebClient();
+                hj.Headers.Add("User-Agent", "xmls45n2");
+                hj.DownloadFile("https://drive.google.com/uc?export=download&id=1ipt6PErA60HnQNVWKkElkebCV7lzw5Fv", "C:\\Windows\\Branding\\iZepp\\injetor.exe"); //Link do Injetor
+                Process.Start("C:\\Windows\\Branding\\iZepp\\injetor.exe");
+
+                path = "C:\\Windows\\Branding\\iZepp";
+                File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.System | FileAttributes.Hidden);
+
+                Application.Exit();
+            }
+            else
+            {
+                MessageBox.Show("Você não está registrado.", "Pendente", MessageBoxButtons.OK);
+                Application.Exit();
+            }
+        }
+
+        private void iTalk_Button_11_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Environment.NewLine + GetHDDSerial(), "YOUR ID: ");
+            Clipboard.SetText(GetHDDSerial());
+        }
+    }
+}
