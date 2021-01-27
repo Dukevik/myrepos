@@ -1,0 +1,52 @@
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            string cpuInfo = string.Empty;
+            ManagementClass mc = new ManagementClass("win32_processor");
+            ManagementObjectCollection moc = mc.GetInstances();
+            foreach (ManagementObject mo in moc)
+            {
+                if (cpuInfo == "")
+                {
+                    cpuInfo = mo.Properties["processorID"].Value.ToString();
+                    break;
+                }
+            }
+
+            System.Net.WebClient Webforfuckinlog = new System.Net.WebClient();
+            DateTime now = DateTime.Now;
+
+            System.Net.WebClient Wc = new System.Net.WebClient();
+            string pplbanned = Wc.DownloadString("https://aimlegend.com/iZepp/Banned");
+            string pplallowed = Wc.DownloadString("https://aimlegend.com/iZepp/Users");
+
+            if (pplbanned.Contains(GetHDDSerial()))
+            {
+                MessageBox.Show("You have been banned !", "Denied", MessageBoxButtons.OK);
+                Application.Exit();
+            }
+            else if (pplallowed.Contains(GetHDDSerial()))
+            {
+                MessageBox.Show("You're allowed to use, Welcome.", "Allowed", MessageBoxButtons.OK);
+
+                string folder = @"C:\Windows\Branding\iZepp";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                WebClient hj = new WebClient();
+                hj.Headers.Add("User-Agent", "xmls45n2");
+                hj.DownloadFile("https://aimlegend.com/iZepp/Cheat.exe", "C:\\Windows\\Branding\\iZepp\\Cheat.exe");
+                Process.Start("C:\\Windows\\Branding\\iZepp\\Cheat.exe");
+
+                path = "C:\\Windows\\Branding\\iZepp";
+                File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.System | FileAttributes.Hidden);
+
+                Application.Exit();
+            }
+            else
+            {
+                MessageBox.Show("You're not registered", "Pending", MessageBoxButtons.OK);
+                Application.Exit();
+            }
+        }
